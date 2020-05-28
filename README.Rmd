@@ -17,10 +17,9 @@ Code demonstrates how to use python within rmarkdown to fetch .pdb files from th
 
 PyMOL:
 
-<video>  <source src="Examples/pymol.mp4" type="video/mp4">
-</video>
+<iframe width="400" height="400" src="`Examples/pymol.mp4`" align="middle" frameborder="0"></iframe>
+
 
 Rayrender:
 
-<video>  <source src="Examples/rayrender_lowres.mp4" type="video/mp4">
-</video>
+<iframe width="400" height="400" src="`Examples/rayrender_lowres.mp4`" align="middle" frameborder="0"></iframe>
