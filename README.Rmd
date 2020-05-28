@@ -1,0 +1,26 @@
+---
+output: 
+  github_document:
+    fig_width: 5
+    fig_height: 5
+  html_preview: false
+editor_options: 
+  chunk_output_type: console
+---
+Readme
+=========================================================
+
+One-day Build:- Protein Ray Tracing and animation
+--------
+
+Code demonstrates how to use python within rmarkdown to fetch .pdb files from the protein data bank, convert them to surface (or other) and export as .obj file. The .obj file is then read into r for rendering with rayshader.
+
+PyMOL:
+
+<video>  <source src="Examples/pymol.mp4" type="video/mp4">
+</video>
+
+Rayrender:
+
+<video>  <source src="Examples/rayrender_lowres.mp4" type="video/mp4">
+</video>

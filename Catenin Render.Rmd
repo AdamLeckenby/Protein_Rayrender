@@ -1,0 +1,69 @@
+---
+title: "Rayrender"
+author: "Adam Leckenby"
+date: "27/05/2020"
+---
+
+```{r, Generate Python Environment}
+#install.packages("reticulate")   #One-time install
+Sys.setenv(RETICULATE_PYTHON = "C:/Users/adam_/PyMOL") #Change this as necessary
+library(reticulate)
+```
+
+```{python, Convert .pdb files into objects}
+import __main__
+__main__.pymol_argv = [ 'pymol', '-qc'] #
+import sys, time, os
+import pymol
+from pymol import cmd
+
+pymol.finish_launching()
+
+cmd.fetch("1JDH")     #Fetch .pdb file from the protein database
+cmd.show("surface")   #Show surface (can also do cartoon, ribbons, mesh etc)
+cmd.save("Beta_catenin.obj")   #Save as object
+```
+
+```{r, Rayrender}
+# install.packages("devtools")
+#devtools::install_github("tylermorganwall/rayrender")
+library(rayrender)
+ 
+frames = 360
+ 
+camerax=-52*cos(seq(0,360,length.out = frames+1)[-frames-1]*pi/360)
+cameraz=52*sin(seq(0,360,length.out = frames+1)[-frames-1]*pi/360)
+x_movement = seq(-100,50,length.out=180)
+x_movement = c(x_movement, rev(x_movement))
+y_movement = seq(50,15,length.out=180)
+y_movement = c(y_movement, rev(y_movement))
+z_movement = seq(35,5,length.out=180)
+z_movement = c(z_movement, rev(z_movement))
+
+x_movement_angle = seq(0,180,length.out=180)
+x_movement_angle = c(x_movement_angle, rev(x_movement_angle))
+y_movement_angle = seq(90,0,length.out=180)
+y_movement_angle = c(y_movement_angle, rev(y_movement_angle))
+z_movement_angle = seq(0,15,length.out=180)
+z_movement_angle = c(z_movement_angle, rev(z_movement_angle))
+
+  scene <- list()
+
+for(i in 1:frames){
+  obj <- generate_ground(depth=-50,  material = diffuse(color="grey20")) %>%
+  add_object(obj_model("Beta_catenin.obj", material=metal("grey",fuzz=0.8),x=0,y=0,z=0)) %>%
+  add_object(sphere(x=camerax[i],y=125,z=cameraz[i], radius = 35,
+                    material = light(intensity = 50))) %>% 
+  add_object(obj_model("TCF4.obj", x=x_movement[i],y=y_movement[i],z=z_movement[i], material=metal("red"), 
+                         angle=c(x_movement_angle[i],y_movement_angle[i],z_movement_angle[i])))
+  scene[[i]] <- obj
+}
+  
+for(i in 1:frames) {
+  render_scene(scene[[i]], width=1500, height=1500, fov=15,
+               lookfrom = c(0,150,512),
+               lookat = c(0,15,0), samples = 2000, parallel = TRUE, clamp_value = 1.5,
+               filename=glue::glue("beta{i}"))}
+
+av_encode_video(glue::glue("beta{1:(frames-1)}.png"), framerate=30, output = "rbeta.mp4")
+```
